@@ -1,0 +1,59 @@
+name: Check DrayTek Firmware Releases
+
+on:
+  schedule:
+    # Runs every Monday at 01:00 UTC (08:00 AM UTC+7)
+    - cron: '0 1 * * 1'
+  workflow_dispatch:
+    inputs:
+      force_notify:
+        description: 'Force send notification even if version is already recorded'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  check-firmware:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Run DrayTek Firmware Tracker
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          NOTIFY_ON_INIT: "true"
+        run: |
+          EXTRA_ARGS=""
+          if [ "${{ inputs.force_notify }}" = "true" ]; then
+            EXTRA_ARGS="--force-notify"
+          fi
+          uv run python src/tracker.py check $EXTRA_ARGS
+
+      - name: Commit and push state changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain data/state.json)" ]; then
+            echo "State file changed. Committing and pushing..."
+            git add data/state.json
+            git commit -m "chore(state): update DrayTek firmware state [skip ci]"
+            git push
+          else
+            echo "No state changes to commit."
+          fi
+
