@@ -2,7 +2,6 @@
 
 import os
 import tempfile
-import pytest
 
 from src.state_manager import StateManager, is_new_or_different
 

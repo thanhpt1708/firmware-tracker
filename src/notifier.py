@@ -2,7 +2,6 @@
 
 import html
 import logging
-from typing import Optional
 
 import httpx
 
@@ -14,7 +13,7 @@ logger = logging.getLogger(__name__)
 class TelegramNotifier:
     """Sends notifications to Telegram via Bot API."""
 
-    def __init__(self, bot_token: Optional[str] = None, chat_id: Optional[str] = None):
+    def __init__(self, bot_token: str | None = None, chat_id: str | None = None):
         self.bot_token = bot_token.strip() if bot_token else None
         self.chat_id = chat_id.strip() if chat_id else None
 
@@ -67,14 +66,14 @@ class TelegramNotifier:
         ]
 
         if info.release_note_url:
-            lines.append(f"• 📄 <a href=\"{info.release_note_url}\">Xem Release Notes (PDF)</a>")
+            lines.append(f'• 📄 <a href="{info.release_note_url}">Xem Release Notes (PDF)</a>')
 
         if info.firmware_zip_url:
             size_txt = f" ({info.firmware_size})" if info.firmware_size else ""
             zip_label = html.escape(info.firmware_zip_name or "Firmware ZIP")
-            lines.append(f"• 💾 <a href=\"{info.firmware_zip_url}\">Tải {zip_label}{size_txt}</a>")
+            lines.append(f'• 💾 <a href="{info.firmware_zip_url}">Tải {zip_label}{size_txt}</a>')
 
-        lines.append(f"• 📂 <a href=\"{info.version_dir_url}\">Mở Thư mục Firmware</a>")
+        lines.append(f'• 📂 <a href="{info.version_dir_url}">Mở Thư mục Firmware</a>')
 
         message = "\n".join(lines)
         return self.send_message(message)

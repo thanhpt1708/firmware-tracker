@@ -31,4 +31,3 @@ def test_tracker_config_filter_enabled():
     enabled = config.get_enabled_models()
     assert len(enabled) == 1
     assert enabled[0].id == "m1"
-

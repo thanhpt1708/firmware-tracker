@@ -1,7 +1,9 @@
 """Unit tests for Telegram notifier using pytest-httpx."""
 
 import json
+
 from pytest_httpx import HTTPXMock
+
 from src.draytek_client import FirmwareInfo
 from src.notifier import TelegramNotifier
 

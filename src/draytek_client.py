@@ -3,12 +3,13 @@
 import logging
 import re
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 from urllib.parse import urljoin
 
-from bs4 import BeautifulSoup
 import httpx
-from packaging.version import InvalidVersion, parse as parse_version
+from bs4 import BeautifulSoup
+from packaging.version import InvalidVersion
+from packaging.version import parse as parse_version
 
 logger = logging.getLogger(__name__)
 
@@ -21,20 +22,20 @@ class FirmwareInfo:
     model_name: str
     version: str
     version_dir_url: str
-    firmware_zip_url: Optional[str] = None
-    firmware_zip_name: Optional[str] = None
-    firmware_size: Optional[str] = None
-    release_note_url: Optional[str] = None
-    release_date: Optional[str] = None
+    firmware_zip_url: str | None = None
+    firmware_zip_name: str | None = None
+    firmware_size: str | None = None
+    release_note_url: str | None = None
+    release_date: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
 class DrayTekClient:
     """Client to inspect DrayTek firmware directories via HTTP/2."""
 
-    def __init__(self, timeout: float = 15.0, client: Optional[httpx.Client] = None):
+    def __init__(self, timeout: float = 15.0, client: httpx.Client | None = None):
         self.timeout = timeout
         headers = {
             "User-Agent": (
@@ -67,13 +68,13 @@ class DrayTekClient:
         """Close the underlying HTTP client."""
         self.client.close()
 
-    def __enter__(self) -> "DrayTekClient":
+    def __enter__(self) -> DrayTekClient:
         return self
 
     def __exit__(self, *args: Any) -> None:
         self.close()
 
-    def get_latest_firmware(self, model_id: str, model_name: str, base_url: str) -> Optional[FirmwareInfo]:
+    def get_latest_firmware(self, model_id: str, model_name: str, base_url: str) -> FirmwareInfo | None:
         """Find the latest firmware release for a given model."""
         if not base_url.endswith("/"):
             base_url += "/"
@@ -100,7 +101,7 @@ class DrayTekClient:
         info = self._inspect_version_directory(model_id, model_name, clean_ver, version_dir_url)
         return info
 
-    def _fetch_latest_from_txt(self, base_url: str) -> Optional[str]:
+    def _fetch_latest_from_txt(self, base_url: str) -> str | None:
         """Attempt to read version from latest.txt."""
         latest_txt_url = urljoin(base_url, "latest.txt")
         try:
@@ -115,14 +116,14 @@ class DrayTekClient:
             logger.debug("Failed to fetch latest.txt from %s: %s", latest_txt_url, e)
         return None
 
-    def _fetch_latest_from_directory(self, base_url: str) -> Optional[str]:
+    def _fetch_latest_from_directory(self, base_url: str) -> str | None:
         """Parse Apache directory index to find highest version folder."""
         try:
             resp = self.client.get(base_url)
             if resp.status_code != 200:
                 return None
             soup = BeautifulSoup(resp.text, "html.parser")
-            versions: List[str] = []
+            versions: list[str] = []
             for a_tag in soup.find_all("a", href=True):
                 href = a_tag["href"].strip()
                 match = re.match(r"^v?(\d+(\.\d+)+[a-zA-Z0-9_\.]*)/?$", href)
@@ -144,7 +145,7 @@ class DrayTekClient:
             logger.error("Error reading directory %s: %s", base_url, e)
             return None
 
-    def _resolve_version_dir(self, base_url: str, version: str) -> Optional[str]:
+    def _resolve_version_dir(self, base_url: str, version: str) -> str | None:
         """Confirm whether the version directory is v<version>/ or <version>/."""
         candidates = [f"v{version}/", f"{version}/"]
         for cand in candidates:

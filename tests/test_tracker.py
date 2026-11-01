@@ -3,12 +3,12 @@
 import os
 import tempfile
 from unittest.mock import MagicMock, patch
-import pytest
+
 import yaml
+from typer.testing import CliRunner
 
 from src.draytek_client import FirmwareInfo
 from src.tracker import app, load_config, run_tracker
-from typer.testing import CliRunner
 
 runner = CliRunner()
 

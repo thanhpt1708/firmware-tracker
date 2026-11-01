@@ -1,8 +1,7 @@
 """Configuration models using Pydantic."""
 
-from typing import List
-from pydantic import BaseModel, Field
 import yaml
+from pydantic import BaseModel, Field
 
 
 class ModelConfig(BaseModel):
@@ -17,16 +16,15 @@ class ModelConfig(BaseModel):
 class TrackerConfig(BaseModel):
     """Root configuration containing all models."""
 
-    models: List[ModelConfig] = Field(default_factory=list, description="List of tracked models")
+    models: list[ModelConfig] = Field(default_factory=list, description="List of tracked models")
 
     @classmethod
-    def from_yaml(cls, path: str) -> "TrackerConfig":
+    def from_yaml(cls, path: str) -> TrackerConfig:
         """Load and validate configuration from YAML file."""
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             raw_data = yaml.safe_load(f) or {}
         return cls.model_validate(raw_data)
 
-    def get_enabled_models(self) -> List[ModelConfig]:
+    def get_enabled_models(self) -> list[ModelConfig]:
         """Return only models with enabled=True."""
         return [m for m in self.models if m.enabled]
-

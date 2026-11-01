@@ -1,6 +1,7 @@
 """Unit tests for DrayTek client and scraper using pytest-httpx."""
 
 from pytest_httpx import HTTPXMock
+
 from src.draytek_client import DrayTekClient
 
 SAMPLE_ROOT_DIR_HTML = """
@@ -69,7 +70,10 @@ def test_get_latest_firmware_via_latest_txt(httpx_mock: HTTPXMock):
     assert info.version == "3.9.9.13"
     assert info.firmware_zip_name == "Vigor2926_v3.9.9.13.zip"
     assert info.firmware_zip_url == "https://fw.draytek.com.tw/Vigor2926/Firmware/v3.9.9.13/Vigor2926_v3.9.9.13.zip"
-    assert info.release_note_url == "https://fw.draytek.com.tw/Vigor2926/Firmware/v3.9.9.13/DrayTek_Vigor2926_V3.9.9.13_release-note.pdf"
+    assert (
+        info.release_note_url
+        == "https://fw.draytek.com.tw/Vigor2926/Firmware/v3.9.9.13/DrayTek_Vigor2926_V3.9.9.13_release-note.pdf"
+    )
     assert info.firmware_size == "32M"
     assert info.release_date == "2026-09-30 09:41"
 

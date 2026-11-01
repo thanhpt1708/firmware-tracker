@@ -1,16 +1,14 @@
 """Main tracker orchestrator for DrayTek firmware releases."""
 
-from datetime import datetime, timezone
 import logging
 import os
-import sys
-from typing import List, Optional
+from datetime import UTC, datetime
 
-from dotenv import load_dotenv
 import typer
+from dotenv import load_dotenv
 
 from src.config import ModelConfig, TrackerConfig
-from src.draytek_client import DrayTekClient, FirmwareInfo
+from src.draytek_client import DrayTekClient
 from src.notifier import TelegramNotifier
 from src.state_manager import StateManager, is_new_or_different
 
@@ -34,7 +32,7 @@ app = typer.Typer(
 )
 
 
-def load_config(config_path: str = "config/models.yaml") -> List[ModelConfig]:
+def load_config(config_path: str = "config/models.yaml") -> list[ModelConfig]:
     """Load and validate list of models from YAML config using Pydantic."""
     if not os.path.exists(config_path):
         logger.error("Configuration file not found: %s", config_path)
@@ -112,13 +110,13 @@ def run_tracker(
 
         if is_new_model or is_newer or force_notify:
             state_record = info.to_dict()
-            state_record["last_checked"] = datetime.now(timezone.utc).isoformat()
+            state_record["last_checked"] = datetime.now(UTC).isoformat()
             state_mgr.update_model(state, model_id, state_record)
             state_changed = True
         else:
             logger.info("[%s] Firmware v%s is already up to date.", model_id, info.version)
             if current_record:
-                current_record["last_checked"] = datetime.now(timezone.utc).isoformat()
+                current_record["last_checked"] = datetime.now(UTC).isoformat()
                 state_changed = True
 
     if state_changed:
