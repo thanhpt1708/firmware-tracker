@@ -75,6 +75,44 @@ def test_send_firmware_alert(httpx_mock: HTTPXMock):
     assert "https://fw.draytek.com.tw/Vigor2926/Firmware/v3.9.9.13/release-note.pdf" in text
 
 
+def test_send_firmware_alert_hikvision(httpx_mock: HTTPXMock):
+    bot_token = "123456:ABC"
+    chat_id = "987654"
+
+    httpx_mock.add_response(
+        url=f"https://api.telegram.org/bot{bot_token}/sendMessage",
+        method="POST",
+        json={"ok": True},
+        status_code=200,
+    )
+
+    notifier = TelegramNotifier(bot_token, chat_id)
+    info = FirmwareInfo(
+        model_id="7208hqhi-m1-e",
+        model_name="Hikvision iDS-7208HQHI-M1/E",
+        version="4.84.011",
+        version_dir_url="https://www.hikvision.com/en/products/.../ids-7208hqhi-m1-e/",
+        firmware_zip_name="Firmware_Asia_V4.84.011_251217_S3000693361.zip",
+        firmware_zip_url="https://assets.hikvision.com/prd/.../Firmware_Asia.zip",
+        firmware_size="31.8M",
+        release_note_url="https://assets.hikvision.com/prd/.../Release_Notes.pdf",
+        release_date="2025-12-17",
+        brand="hikvision",
+    )
+
+    success = notifier.send_firmware_alert(info)
+    assert success is True
+
+    requests = httpx_mock.get_requests()
+    req_body = json.loads(requests[0].content)
+    text = req_body["text"]
+    assert "CẬP NHẬT FIRMWARE HIKVISION MỚI" in text
+    assert "Hikvision iDS-7208HQHI-M1/E" in text
+    assert "<code>v4.84.011</code>" in text
+    assert "2025-12-17" in text
+    assert "Xem Trang Sản Phẩm Hikvision" in text
+
+
 def test_send_test_message(httpx_mock: HTTPXMock):
     bot_token = "123456:ABC"
     chat_id = "987654"
@@ -88,3 +126,7 @@ def test_send_test_message(httpx_mock: HTTPXMock):
 
     notifier = TelegramNotifier(bot_token, chat_id)
     assert notifier.send_test_message() is True
+
+    requests = httpx_mock.get_requests()
+    req_body = json.loads(requests[0].content)
+    assert "Firmware Release Tracker - Test Notification" in req_body["text"]

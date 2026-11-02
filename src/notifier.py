@@ -51,15 +51,17 @@ class TelegramNotifier:
 
     def send_firmware_alert(self, info: FirmwareInfo) -> bool:
         """Format and send firmware alert message."""
+        brand_name = info.brand.upper()
         model_name = html.escape(info.model_name)
-        version = html.escape(info.version)
+        ver_str = info.version if info.version.lower().startswith("v") else f"v{info.version}"
+        version = html.escape(ver_str)
         release_date = html.escape(info.release_date or "Chưa rõ")
 
         lines = [
-            "🚀 <b>CẬP NHẬT FIRMWARE DRAYTEK MỚI</b>",
+            f"🚀 <b>CẬP NHẬT FIRMWARE {brand_name} MỚI</b>",
             "",
             f"📌 <b>Thiết bị:</b> {model_name}",
-            f"🏷 <b>Phiên bản:</b> <code>v{version}</code>",
+            f"🏷 <b>Phiên bản:</b> <code>{version}</code>",
             f"🗓 <b>Ngày phát hành:</b> {release_date}",
             "",
             "🔗 <b>Tài liệu & Tải về:</b>",
@@ -73,7 +75,15 @@ class TelegramNotifier:
             zip_label = html.escape(info.firmware_zip_name or "Firmware ZIP")
             lines.append(f'• 💾 <a href="{info.firmware_zip_url}">Tải {zip_label}{size_txt}</a>')
 
-        lines.append(f'• 📂 <a href="{info.version_dir_url}">Mở Thư mục Firmware</a>')
+        match info.brand.lower():
+            case "hikvision":
+                folder_label = "Xem Trang Sản Phẩm Hikvision"
+            case "draytek":
+                folder_label = "Mở Thư mục Firmware"
+            case _:
+                folder_label = "Mở Thư mục Firmware"
+
+        lines.append(f'• 📂 <a href="{info.version_dir_url}">{folder_label}</a>')
 
         message = "\n".join(lines)
         return self.send_message(message)
@@ -81,8 +91,8 @@ class TelegramNotifier:
     def send_test_message(self) -> bool:
         """Send a test message to verify Telegram bot setup."""
         test_msg = (
-            "🤖 <b>DrayTek Firmware Tracker - Test Notification</b>\n\n"
+            "🤖 <b>Firmware Release Tracker - Test Notification</b>\n\n"
             "✅ Kết nối Telegram Bot thành công!\n"
-            "Hệ thống theo dõi firmware DrayTek đã sẵn sàng hoạt động."
+            "Hệ thống theo dõi firmware đã sẵn sàng hoạt động."
         )
         return self.send_message(test_msg)

@@ -1,26 +1,31 @@
-# DrayTek Firmware Tracker - Model Configuration
-#
-# Cấu hình danh sách các dòng sản phẩm DrayTek cần theo dõi firmware.
+# ==============================================================================
+# Firmware Release Tracker - Model Configuration
+# ==============================================================================
+# Cấu hình danh sách các dòng sản phẩm cần theo dõi firmware được chia theo hãng.
 # Bạn có thể bật (enabled: true) hoặc tắt (enabled: false) từng model.
-# Đường dẫn URL chuẩn thường có dạng: https://fw.draytek.com.tw/<Tên_Model>/Firmware/
 
-models:
+# ------------------------------------------------------------------------------
+# 1. DRAYTEK ROUTER & ACCESS POINT
+# ------------------------------------------------------------------------------
+# Đường dẫn URL chuẩn thường có dạng: https://fw.draytek.com.tw/<Tên_Model>/Firmware/
+draytek:
   - id: "vigor2926"
     name: "DrayTek Vigor 2926 Series"
     url: "https://fw.draytek.com.tw/Vigor2926/Firmware/"
     enabled: true
 
-  - id: "vigor2927"
-    name: "DrayTek Vigor 2927 Series"
-    url: "https://fw.draytek.com.tw/Vigor2927/Firmware/"
-    enabled: false
+# ------------------------------------------------------------------------------
+# 2. HIKVISION DVR, NVR & IPC
+# ------------------------------------------------------------------------------
+# Tự động đồng bộ từ cổng Firmware Catalog của Hikvision.
+# region: "Asia" (mặc định cho thị trường VN) hoặc "Europe"
+hikvision:
+  - id: "7208hqhi-m1-e"
+    name: "Hikvision iDS-7208HQHI-M1/E"
+    region: "Asia"
+    enabled: true
 
-  - id: "vigor2962"
-    name: "DrayTek Vigor 2962 Series"
-    url: "https://fw.draytek.com.tw/Vigor2962/Firmware/"
-    enabled: false
-
-  - id: "vigor3910"
-    name: "DrayTek Vigor 3910 Series"
-    url: "https://fw.draytek.com.tw/Vigor3910/Firmware/"
-    enabled: false
+  - id: "ds-2cd1043g2-liuf"
+    name: "Hikvision DS-2CD1043G2-LIUF"
+    region: "Asia"
+    enabled: true

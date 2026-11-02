@@ -92,6 +92,54 @@ def test_run_tracker_new_version_flow(mock_client_cls, mock_notifier_cls):
         mock_notifier.send_firmware_alert.assert_not_called()
 
 
+@patch("src.tracker.TelegramNotifier")
+@patch("src.tracker.HikvisionClient")
+def test_run_tracker_hikvision_model(mock_hik_client_cls, mock_notifier_cls):
+    mock_hik_client = MagicMock()
+    mock_notifier = MagicMock()
+    mock_hik_client_cls.return_value = mock_hik_client
+    mock_notifier_cls.return_value = mock_notifier
+
+    mock_hik_client.get_latest_firmware.return_value = FirmwareInfo(
+        model_id="7208hqhi-m1-e",
+        model_name="IDS-7208HQHI-M1/E",
+        version="4.84.011",
+        version_dir_url="https://www.hikvision.com/en/products/Turbo-HD-Products/DVR/Value-Series/ids-7208hqhi-m1-e/",
+        firmware_zip_name="Firmware_Asia_V4.84.011_251217_S3000693361.zip",
+        firmware_zip_url="https://assets.hikvision.com/file.zip",
+        brand="hikvision",
+    )
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        config_file = os.path.join(tmpdir, "models.yaml")
+        state_file = os.path.join(tmpdir, "state.json")
+
+        with open(config_file, "w") as f:
+            yaml.dump(
+                {
+                    "models": [
+                        {
+                            "id": "7208hqhi-m1-e",
+                            "brand": "hikvision",
+                            "name": "Hikvision iDS-7208HQHI-M1/E",
+                            "enabled": True,
+                        }
+                    ]
+                },
+                f,
+            )
+
+        exit_code = run_tracker(
+            config_path=config_file,
+            state_path=state_file,
+            dry_run=False,
+            notify_on_init=True,
+        )
+        assert exit_code == 0
+        mock_hik_client.get_latest_firmware.assert_called_once()
+        mock_notifier.send_firmware_alert.assert_called_once()
+
+
 @patch("src.tracker.run_tracker")
 def test_cli_check_command(mock_run_tracker):
     mock_run_tracker.return_value = 0
@@ -104,6 +152,7 @@ def test_cli_check_command(mock_run_tracker):
         force_notify=False,
         notify_on_init=True,
         target_model="vigor2926",
+        target_brand="",
     )
 
 

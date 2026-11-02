@@ -31,3 +31,24 @@ def test_tracker_config_filter_enabled():
     enabled = config.get_enabled_models()
     assert len(enabled) == 1
     assert enabled[0].id == "m1"
+
+
+def test_tracker_config_vendor_sections():
+    raw = {
+        "draytek": [
+            {"id": "v2926", "name": "Vigor 2926", "url": "https://fw.draytek.com/v2926/", "enabled": True},
+            {"id": "v2927", "name": "Vigor 2927", "url": "https://fw.draytek.com/v2927/", "enabled": False},
+        ],
+        "hikvision": [
+            {"id": "7208hqhi-m1-e", "name": "iDS-7208HQHI-M1/E", "enabled": True},
+        ],
+    }
+    config = TrackerConfig.model_validate(raw)
+    all_models = config.get_all_models()
+    assert len(all_models) == 3
+
+    enabled = config.get_enabled_models()
+    assert len(enabled) == 2
+    assert enabled[0].brand == "draytek"
+    assert enabled[1].brand == "hikvision"
+    assert enabled[1].url == "https://www.hikvision.com/en/support/download/firmware/"

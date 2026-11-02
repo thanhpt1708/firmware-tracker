@@ -1,7 +1,7 @@
 [project]
-name = "draytek-firmware-tracker"
+name = "firmware-tracker"
 version = "0.1.0"
-description = "Automated DrayTek firmware release tracker and Telegram notifier"
+description = "Automated firmware release tracker and Telegram notifier (DrayTek, Hikvision...)"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [

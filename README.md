@@ -1,16 +1,16 @@
-# 🛰️ DrayTek Firmware Release Tracker & Telegram Notifier
+# 🛰️ Firmware Release Tracker & Telegram Notifier (DrayTek & Hikvision)
 
-Hệ thống tự động kiểm tra và thông báo khi hãng **DrayTek** phát hành phiên bản firmware mới cho các dòng sản phẩm bạn quan tâm (mặc định đã cấu hình sẵn dòng **Vigor 2926**). Hệ thống chạy định kỳ hàng tuần thông qua **GitHub Actions** và gửi thông báo trực tiếp tới **Telegram**.
+Hệ thống tự động kiểm tra và thông báo khi các hãng **DrayTek** và **Hikvision** phát hành phiên bản firmware mới cho các dòng sản phẩm bạn quan tâm (hỗ trợ các dòng router DrayTek Vigor, đầu ghi DVR/NVR và camera IP Hikvision). Hệ thống chạy định kỳ từ thứ 2 đến thứ 6 hàng tuần thông qua **GitHub Actions** và gửi thông báo trực tiếp tới **Telegram**.
 
 ---
 
 ## 🌟 Tính năng nổi bật
 
-- 🔍 **Crawl thông minh**: Tự động kiểm tra file `latest.txt` từ máy chủ DrayTek (`fw.draytek.com.tw`) hoặc fallback parse danh mục HTML thư mục Apache.
-- 📦 **Đầy đủ thông tin cảnh báo**: Gửi tin nhắn Telegram kèm link tải trực tiếp firmware `.zip` (kèm dung lượng), tài liệu Release Note `.pdf`, ngày phát hành và link thư mục.
+- 🔍 **Crawl thông minh**: Hỗ trợ crawl trực tiếp từ kho **DrayTek** (`fw.draytek.com.tw` qua `latest.txt` / Apache index) và cổng **Hikvision** (trích xuất danh mục tài sản firmware chính hãng).
+- 📦 **Đầy đủ thông tin cảnh báo**: Gửi tin nhắn Telegram kèm link tải trực tiếp firmware `.zip` (kèm dung lượng), tài liệu Release Note `.pdf`, ngày phát hành và link thư mục/trang sản phẩm.
 - ⚙️ **Quản lý dependencies bằng `uv`**: Tốc độ cài đặt và chạy siêu nhanh, chuẩn PEP 621 (`pyproject.toml`).
 - 🔄 **Lưu trạng thái bền vững**: File `data/state.json` được tự động commit & push về Git repository sau mỗi lần phát hiện firmware mới, tránh gửi lặp thông báo.
-- ⏱️ **Tự động hóa hoàn toàn với GitHub Actions**: Chạy định kỳ vào thứ 2 hàng tuần (08:00 AM UTC+7) hoặc có thể kích hoạt thủ công bất cứ lúc nào qua nút **Run workflow**.
+- ⏱️ **Tự động hóa hoàn toàn với GitHub Actions**: Chạy định kỳ từ thứ 2 đến thứ 6 hàng tuần (08:00 AM UTC+7) hoặc có thể kích hoạt thủ công bất cứ lúc nào qua nút **Run workflow**.
 - 🤖 **Tự động cập nhật thư viện với Dependabot**: Cấu hình tự động kiểm tra và mở Pull Request cập nhật thư viện Python và GitHub Actions vào thứ 2 hàng tuần.
 
 ---
@@ -62,10 +62,11 @@ Sau khi push repo này lên GitHub:
 
 ### 3. Thêm / Tùy chỉnh dòng sản phẩm theo dõi
 
-Chỉnh sửa file `config/models.yaml`:
+Chỉnh sửa file `config/models.yaml`. Cấu hình được phân chia rõ ràng theo từng hãng (DrayTek, Hikvision...) giúp dễ dàng quản lý và mở rộng:
 
 ```yaml
-models:
+# --- DRAYTEK ROUTER & ACCESS POINT ---
+draytek:
   - id: "vigor2926"
     name: "DrayTek Vigor 2926 Series"
     url: "https://fw.draytek.com.tw/Vigor2926/Firmware/"
@@ -74,12 +75,15 @@ models:
   - id: "vigor2927"
     name: "DrayTek Vigor 2927 Series"
     url: "https://fw.draytek.com.tw/Vigor2927/Firmware/"
-    enabled: true  # Đổi thành true để theo dõi thêm Vigor 2927
-
-  - id: "vigor2962"
-    name: "DrayTek Vigor 2962 Series"
-    url: "https://fw.draytek.com.tw/Vigor2962/Firmware/"
     enabled: false
+
+# --- HIKVISION DVR, NVR & IPC ---
+# region: "Asia" (mặc định) hoặc "Europe"
+hikvision:
+  - id: "7208hqhi-m1-e"
+    name: "Hikvision iDS-7208HQHI-M1/E"
+    region: "Asia"
+    enabled: true
 ```
 
 ---

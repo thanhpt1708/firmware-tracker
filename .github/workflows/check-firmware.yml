@@ -1,11 +1,25 @@
-name: Check DrayTek Firmware Releases
+name: Check Firmware Releases
 
 on:
   schedule:
-    # Runs every Monday at 01:00 UTC (08:00 AM UTC+7)
-    - cron: '0 1 * * 1'
+    # Runs Monday to Friday at 01:00 UTC (08:00 AM UTC+7)
+    - cron: '0 1 * * 1-5'
   workflow_dispatch:
     inputs:
+      brand:
+        description: 'Brand to check (leave empty or all for all brands)'
+        required: false
+        type: choice
+        default: 'all'
+        options:
+          - all
+          - draytek
+          - hikvision
+      model:
+        description: 'Specific model ID to check (optional)'
+        required: false
+        type: string
+        default: ''
       force_notify:
         description: 'Force send notification even if version is already recorded'
         required: false
@@ -32,7 +46,7 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked
 
-      - name: Run DrayTek Firmware Tracker
+      - name: Run Firmware Tracker
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -40,7 +54,13 @@ jobs:
         run: |
           EXTRA_ARGS=""
           if [ "${{ inputs.force_notify }}" = "true" ]; then
-            EXTRA_ARGS="--force-notify"
+            EXTRA_ARGS="$EXTRA_ARGS --force-notify"
+          fi
+          if [ -n "${{ inputs.brand }}" ] && [ "${{ inputs.brand }}" != "all" ]; then
+            EXTRA_ARGS="$EXTRA_ARGS --brand ${{ inputs.brand }}"
+          fi
+          if [ -n "${{ inputs.model }}" ]; then
+            EXTRA_ARGS="$EXTRA_ARGS --model ${{ inputs.model }}"
           fi
           uv run python src/tracker.py check $EXTRA_ARGS
 
@@ -51,7 +71,8 @@ jobs:
           if [ -n "$(git status --porcelain data/state.json)" ]; then
             echo "State file changed. Committing and pushing..."
             git add data/state.json
-            git commit -m "chore(state): update DrayTek firmware state [skip ci]"
+            git commit -m "chore(state): update firmware tracking state [skip ci]"
+            git pull --rebase origin main || true
             git push
           else
             echo "No state changes to commit."
