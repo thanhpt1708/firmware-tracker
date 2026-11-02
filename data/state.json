@@ -1,1 +1,14 @@
-{}
+{
+  "vigor2926": {
+    "model_id": "vigor2926",
+    "model_name": "DrayTek Vigor 2926 Series",
+    "version": "3.9.9.13",
+    "version_dir_url": "https://fw.draytek.com.tw/Vigor2926/Firmware/v3.9.9.13/",
+    "firmware_zip_url": "https://fw.draytek.com.tw/Vigor2926/Firmware/v3.9.9.13/Vigor2926_v3.9.9.13.zip",
+    "firmware_zip_name": "Vigor2926_v3.9.9.13.zip",
+    "firmware_size": "32M",
+    "release_note_url": "https://fw.draytek.com.tw/Vigor2926/Firmware/v3.9.9.13/DrayTek_Vigor2926_V3.9.9.13_release-note.pdf",
+    "release_date": "2026-09-30 09:41",
+    "last_checked": "2026-11-02T07:33:19.777071+00:00"
+  }
+}
