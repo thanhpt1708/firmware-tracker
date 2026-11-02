@@ -42,13 +42,18 @@ def test_tracker_config_vendor_sections():
         "hikvision": [
             {"id": "7208hqhi-m1-e", "name": "iDS-7208HQHI-M1/E", "enabled": True},
         ],
+        "tplink": [
+            {"id": "deco-m4", "name": "Deco M4", "enabled": True},
+        ],
     }
     config = TrackerConfig.model_validate(raw)
     all_models = config.get_all_models()
-    assert len(all_models) == 3
+    assert len(all_models) == 4
 
     enabled = config.get_enabled_models()
-    assert len(enabled) == 2
+    assert len(enabled) == 3
     assert enabled[0].brand == "draytek"
     assert enabled[1].brand == "hikvision"
     assert enabled[1].url == "https://www.hikvision.com/en/support/download/firmware/"
+    assert enabled[2].brand == "tplink"
+    assert enabled[2].url == "https://www.tp-link.com/en/support/download/deco-m4/"

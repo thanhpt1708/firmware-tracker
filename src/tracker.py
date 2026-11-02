@@ -12,6 +12,7 @@ from src.draytek_client import DrayTekClient
 from src.hikvision_client import HikvisionClient
 from src.notifier import TelegramNotifier
 from src.state_manager import StateManager, is_new_or_different
+from src.tplink_client import TPLinkClient
 
 # Load environment variables from .env file if available
 load_dotenv()
@@ -63,6 +64,7 @@ def run_tracker(
     notifier = TelegramNotifier(bot_token=bot_token, chat_id=chat_id)
     draytek_client = DrayTekClient()
     hikvision_client = HikvisionClient()
+    tplink_client = TPLinkClient()
     state_mgr = StateManager(state_path)
     state = state_mgr.load()
 
@@ -98,6 +100,14 @@ def run_tracker(
                         catalog_url=url,
                         region=model.region,
                         model_name_match=model.model_name_match,
+                    )
+                case "tplink":
+                    logger.info("Checking TP-Link '%s' (%s) at %s...", model_name, model_id, url)
+                    info = tplink_client.get_latest_firmware(
+                        model_id=model_id,
+                        model_name=model_name,
+                        url=url,
+                        hw_version=model.hw_version,
                     )
                 case "draytek" | _:
                     logger.info("Checking DrayTek '%s' (%s) at %s...", model_name, model_id, url)
@@ -151,6 +161,7 @@ def run_tracker(
     finally:
         draytek_client.close()
         hikvision_client.close()
+        tplink_client.close()
 
     logger.info("Firmware check completed.")
     return 0
@@ -168,7 +179,7 @@ def check_command(
         help="Send notification on first run for newly tracked models",
     ),
     model: str = typer.Option("", "--model", "-m", help="Only check a specific model ID"),
-    brand: str = typer.Option("", "--brand", "-b", help="Only check models from a specific brand (e.g. draytek, hikvision)"),
+    brand: str = typer.Option("", "--brand", "-b", help="Only check models from a specific brand (e.g. draytek, hikvision, tplink)"),
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose debug logging"),
 ) -> None:
     """Check firmware releases and notify via Telegram if a new version is found."""
@@ -222,7 +233,7 @@ def main(
         help="Send notification on first run for newly tracked models",
     ),
     model: str = typer.Option("", "--model", "-m", help="Only check a specific model ID"),
-    brand: str = typer.Option("", "--brand", "-b", help="Only check models from a specific brand (e.g. draytek, hikvision)"),
+    brand: str = typer.Option("", "--brand", "-b", help="Only check models from a specific brand (e.g. draytek, hikvision, tplink)"),
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose debug logging"),
 ) -> None:
     """🛰️ Firmware Tracker CLI."""

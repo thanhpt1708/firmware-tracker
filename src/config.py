@@ -12,16 +12,21 @@ class ModelConfig(BaseModel):
     id: str = Field(..., description="Unique identifier/slug for the model")
     name: str = Field(..., description="Display name for the model")
     url: str = Field(default="", description="Base firmware directory URL or portal URL")
-    brand: str = Field(default="draytek", description="Brand: 'draytek' or 'hikvision'")
+    brand: str = Field(default="draytek", description="Brand: 'draytek', 'hikvision', or 'tplink'")
     region: str = Field(default="Asia", description="Region preference for Hikvision (e.g. Asia, Europe)")
+    hw_version: str | None = Field(default=None, description="Optional hardware version for TP-Link (e.g. 'v1', 'v2')")
     model_name_match: str | None = Field(default=None, description="Optional custom string to match in catalog")
     enabled: bool = Field(default=True, description="Whether to monitor this model")
 
     @model_validator(mode="after")
     def validate_url(self) -> Self:
-        if self.brand.lower() == "hikvision" and not self.url:
+        brand = self.brand.lower()
+        if brand == "hikvision" and not self.url:
             self.url = "https://www.hikvision.com/en/support/download/firmware/"
-        elif self.brand.lower() == "draytek" and not self.url:
+        elif brand == "tplink" and not self.url:
+            base_slug = self.id.split("-v")[0] if "-v" in self.id else self.id
+            self.url = f"https://www.tp-link.com/en/support/download/{base_slug}/"
+        elif brand == "draytek" and not self.url:
             raise ValueError("URL is required for DrayTek models")
         return self
 
@@ -31,6 +36,7 @@ class TrackerConfig(BaseModel):
 
     draytek: list[ModelConfig] = Field(default_factory=list, description="DrayTek models")
     hikvision: list[ModelConfig] = Field(default_factory=list, description="Hikvision models")
+    tplink: list[ModelConfig] = Field(default_factory=list, description="TP-Link & Deco models")
     models: list[ModelConfig] = Field(default_factory=list, description="Legacy flat list of models")
 
     @model_validator(mode="before")
@@ -47,6 +53,11 @@ class TrackerConfig(BaseModel):
                 for item in data["hikvision"]:
                     if isinstance(item, dict) and "brand" not in item:
                         item["brand"] = "hikvision"
+            # Auto-assign brand='tplink' for items in tplink list
+            if "tplink" in data and isinstance(data["tplink"], list):
+                for item in data["tplink"]:
+                    if isinstance(item, dict) and "brand" not in item:
+                        item["brand"] = "tplink"
         return data
 
     @classmethod
@@ -58,7 +69,7 @@ class TrackerConfig(BaseModel):
 
     def get_all_models(self) -> list[ModelConfig]:
         """Return all models combined from all vendor sections."""
-        return self.draytek + self.hikvision + self.models
+        return self.draytek + self.hikvision + self.tplink + self.models
 
     def get_enabled_models(self) -> list[ModelConfig]:
         """Return only models with enabled=True."""

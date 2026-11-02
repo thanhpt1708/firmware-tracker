@@ -80,10 +80,23 @@ class TelegramNotifier:
                 folder_label = "Xem Trang Sản Phẩm Hikvision"
             case "draytek":
                 folder_label = "Mở Thư mục Firmware"
+            case "tplink":
+                folder_label = "Mở Trang Hỗ Trợ TP-Link"
             case _:
                 folder_label = "Mở Thư mục Firmware"
 
         lines.append(f'• 📂 <a href="{info.version_dir_url}">{folder_label}</a>')
+
+        if info.changelog:
+            clean_log = info.changelog.strip()
+            lines_log = [line.strip() for line in clean_log.splitlines() if line.strip()]
+            if lines_log:
+                preview_lines = lines_log[:6]
+                if len(lines_log) > 6:
+                    preview_lines.append("...")
+                preview_text = html.escape("\n".join(preview_lines))
+                lines.append("")
+                lines.append(f"📝 <b>Điểm mới / Cập nhật:</b>\n<pre>{preview_text}</pre>")
 
         message = "\n".join(lines)
         return self.send_message(message)

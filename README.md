@@ -1,13 +1,16 @@
-# 🛰️ Firmware Release Tracker & Telegram Notifier (DrayTek & Hikvision)
+# 🛰️ Firmware Release Tracker & Telegram Notifier (DrayTek, Hikvision & TP-Link/Deco)
 
-Hệ thống tự động kiểm tra và thông báo khi các hãng **DrayTek** và **Hikvision** phát hành phiên bản firmware mới cho các dòng sản phẩm bạn quan tâm (hỗ trợ các dòng router DrayTek Vigor, đầu ghi DVR/NVR và camera IP Hikvision). Hệ thống chạy định kỳ từ thứ 2 đến thứ 6 hàng tuần thông qua **GitHub Actions** và gửi thông báo trực tiếp tới **Telegram**.
+Hệ thống tự động kiểm tra và thông báo khi các hãng **DrayTek**, **Hikvision** và **TP-Link** (bao gồm cả dòng WiFi Mesh **Deco**) phát hành phiên bản firmware mới cho các dòng sản phẩm bạn quan tâm. Hệ thống chạy định kỳ từ thứ 2 đến thứ 6 hàng tuần thông qua **GitHub Actions** và gửi thông báo trực tiếp tới **Telegram**.
 
 ---
 
 ## 🌟 Tính năng nổi bật
 
-- 🔍 **Crawl thông minh**: Hỗ trợ crawl trực tiếp từ kho **DrayTek** (`fw.draytek.com.tw` qua `latest.txt` / Apache index) và cổng **Hikvision** (trích xuất danh mục tài sản firmware chính hãng).
-- 📦 **Đầy đủ thông tin cảnh báo**: Gửi tin nhắn Telegram kèm link tải trực tiếp firmware `.zip` (kèm dung lượng), tài liệu Release Note `.pdf`, ngày phát hành và link thư mục/trang sản phẩm.
+- 🔍 **Crawl thông minh đa nền tảng**:
+  - **DrayTek**: Quét kho Apache index / `latest.txt` tại `fw.draytek.com.tw`.
+  - **Hikvision**: Trích xuất danh mục tài sản firmware chính hãng theo vùng (Asia/Europe).
+  - **TP-Link & Deco**: Thu thập firmware mới nhất, hỗ trợ chọn Hardware Version (V1, V2...) và trích xuất điểm mới (Changelog/Release Notes) trực tiếp từ trang hỗ trợ.
+- 📦 **Đầy đủ thông tin cảnh báo**: Gửi tin nhắn Telegram kèm link tải trực tiếp firmware `.zip` (kèm dung lượng), tài liệu Release Note `.pdf` hoặc trích đoạn changelog, ngày phát hành và link trang sản phẩm.
 - ⚙️ **Quản lý dependencies bằng `uv`**: Tốc độ cài đặt và chạy siêu nhanh, chuẩn PEP 621 (`pyproject.toml`).
 - 🔄 **Lưu trạng thái bền vững**: File `data/state.json` được tự động commit & push về Git repository sau mỗi lần phát hiện firmware mới, tránh gửi lặp thông báo.
 - ⏱️ **Tự động hóa hoàn toàn với GitHub Actions**: Chạy định kỳ từ thứ 2 đến thứ 6 hàng tuần (08:00 AM UTC+7) hoặc có thể kích hoạt thủ công bất cứ lúc nào qua nút **Run workflow**.
@@ -83,6 +86,19 @@ hikvision:
   - id: "7208hqhi-m1-e"
     name: "Hikvision iDS-7208HQHI-M1/E"
     region: "Asia"
+    enabled: true
+
+# --- TP-LINK ROUTER & DECO MESH ---
+# Hỗ trợ URL trực tiếp kèm Hardware Version (/v1/, /v2/...) hoặc URL model tổng quát
+tplink:
+  - id: "deco-m4-v1"
+    name: "TP-Link Deco M4 (V1)"
+    url: "https://www.tp-link.com/vn/support/download/deco-m4/v1/"
+    enabled: true
+
+  - id: "deco-x60-v3.2"
+    name: "TP-Link Deco X60 (V3.2)"
+    url: "https://www.tp-link.com/vn/support/download/deco-x60/v3.20/"
     enabled: true
 ```
 

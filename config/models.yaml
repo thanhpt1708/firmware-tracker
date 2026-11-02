@@ -29,3 +29,19 @@ hikvision:
     name: "Hikvision DS-2CD1043G2-LIUF"
     region: "Asia"
     enabled: true
+
+# ------------------------------------------------------------------------------
+# 3. TP-LINK ROUTER & DECO MESH
+# ------------------------------------------------------------------------------
+# Đường dẫn download chuẩn: https://www.tp-link.com/en/support/download/<model>/
+# hoặc có thể chỉ định cụ thể Hardware Version: .../<model>/v1/
+tplink:
+  - id: "deco-m4-v1"
+    name: "TP-Link Deco M4 (V1)"
+    url: "https://www.tp-link.com/vn/support/download/deco-m4/v1/"
+    enabled: true
+
+  - id: "deco-x60-v3.2"
+    name: "TP-Link Deco X60 (V3.2)"
+    url: "https://www.tp-link.com/vn/support/download/deco-x60/v3.20/"
+    enabled: true
