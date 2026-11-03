@@ -8,6 +8,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 from src.draytek_client import FirmwareInfo
+from src.http_client import BaseCrawlerClient
 
 logger = logging.getLogger(__name__)
 
@@ -40,33 +41,11 @@ def extract_tplink_version(raw_name: str) -> str:
     return raw_name.strip()
 
 
-class TPLinkClient:
+class TPLinkClient(BaseCrawlerClient):
     """Client to scrape and parse TP-Link / Deco firmware download pages."""
 
-    def __init__(self, timeout: float = 20.0, client: httpx.Client | None = None):
-        self.timeout = timeout
-        headers = {
-            "User-Agent": (
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/120.0.0.0 Safari/537.36"
-            ),
-            "Accept": (
-                "text/html,application/xhtml+xml,application/xml;q=0.9,"
-                "image/avif,image/webp,*/*;q=0.8"
-            ),
-            "Accept-Language": "en-US,en;q=0.9,vi;q=0.8",
-        }
-        self.client = client or httpx.Client(
-            timeout=self.timeout,
-            http2=True,
-            follow_redirects=True,
-            headers=headers,
-        )
-
-    def close(self) -> None:
-        """Close internal httpx client."""
-        self.client.close()
+    def __init__(self, timeout: float = 20.0, client: httpx.Client | None = None) -> None:
+        super().__init__(timeout=timeout, client=client)
 
     def build_target_url(self, base_url: str, hw_version: str | None = None) -> str:
         """Ensure correct URL including optional hardware version subpath."""
