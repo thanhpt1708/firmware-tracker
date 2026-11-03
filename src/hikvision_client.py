@@ -66,6 +66,15 @@ class HikvisionClient:
         try:
             logger.info("Fetching Hikvision firmware catalog from %s...", catalog_url)
             resp = self.client.get(catalog_url)
+            logger.info(
+                "Hikvision catalog response: status=%d url=%s content_type=%r "
+                "content_length=%r server=%r",
+                resp.status_code,
+                resp.url,
+                resp.headers.get("content-type"),
+                resp.headers.get("content-length"),
+                resp.headers.get("server"),
+            )
             if resp.status_code == 200 and len(resp.text) > 1000:
                 self._cached_catalog_html = resp.text
                 logger.info(
@@ -73,7 +82,12 @@ class HikvisionClient:
                     len(resp.text) / (1024 * 1024),
                 )
                 return self._cached_catalog_html
-            logger.error("Failed to fetch catalog: HTTP %d (Length: %d)", resp.status_code, len(resp.text))
+            logger.error(
+                "Failed to fetch catalog: HTTP %d (Length: %d, body prefix: %r)",
+                resp.status_code,
+                len(resp.text),
+                resp.text[:300],
+            )
         except httpx.HTTPError as e:
             logger.error("HTTP error while fetching Hikvision catalog: %s", e)
         return None
