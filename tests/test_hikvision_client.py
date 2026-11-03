@@ -160,3 +160,38 @@ def test_get_latest_firmware_end_to_end(httpx_mock: HTTPXMock):
     assert info.version == "4.84.011"
     assert info.model_id == "7208hqhi-m1-e"
 
+
+def test_fetch_catalog_solves_edgeone_challenge(httpx_mock: HTTPXMock):
+    catalog_url = "https://www.hikvision.com/en/support/download/firmware/"
+    challenge_html = (
+        '<script>function a(a){function n(){for(var a={wQzOV:_0x649a("0x4"),'
+        'iTyzs:function(a,n){return a+n}},n=a[_0x649a("0x5")][_0x649a("0x6")]("|"),e=0;;)'
+        '{switch(n[e++]){case"0":t+="EO_Bot_Ssid=";continue;case"1":return t;'
+        'case"2":t+="";continue;case"3":t=a[_0x649a("0x7")](t,601620480);continue;'
+        'case"4":var t="";continue}break}}var e={WTKkN:122760035,bOYDu:944346978,'
+        'dtzqS:function(a,n){return a+n},wyeCN:1396148637,pCQRM:function(a){return a()}},'
+        't=0;return t+=e[_0x649a("0x0")],t+=e[_0x649a("0x1")],t=e[_0x649a("0x2")](t,e[_0x649a("0x3")]),'
+        '[t,e[_0x649a("0x8")](n)][a]}document[_0x649a("0x9")]="__tst_status="+a(0)+"#;";</script>'
+    )
+
+    httpx_mock.add_response(
+        url=catalog_url,
+        method="GET",
+        text=challenge_html,
+        headers={"set-cookie": "path=/", "server": "TencentEdgeOne"},
+        status_code=200,
+    )
+    httpx_mock.add_response(
+        url=catalog_url,
+        method="GET",
+        text=SAMPLE_HIKVISION_CATALOG_HTML,
+        status_code=200,
+    )
+
+    with HikvisionClient() as client:
+        html = client.fetch_catalog(catalog_url)
+        assert html == SAMPLE_HIKVISION_CATALOG_HTML
+        assert client.client.cookies.get("__tst_status") == "2463255650#"
+        assert client.client.cookies.get("EO_Bot_Ssid") == "601620480"
+
+
