@@ -9,6 +9,34 @@
     "firmware_size": "32M",
     "release_note_url": "https://fw.draytek.com.tw/Vigor2926/Firmware/v3.9.9.13/DrayTek_Vigor2926_V3.9.9.13_release-note.pdf",
     "release_date": "2026-09-30 09:41",
-    "last_checked": "2026-11-02T07:33:19.777071+00:00"
+    "last_checked": "2026-11-03T07:32:23.771409+00:00"
+  },
+  "deco-m4-v1": {
+    "model_id": "deco-m4-v1",
+    "model_name": "TP-Link Deco M4 (V1)",
+    "version": "1.8.2 Build 20251027",
+    "version_dir_url": "https://www.tp-link.com/vn/support/download/deco-m4/v1/",
+    "firmware_zip_url": null,
+    "firmware_zip_name": null,
+    "firmware_size": null,
+    "release_note_url": null,
+    "release_date": "2025-12-12",
+    "brand": "tplink",
+    "changelog": "New Features/Enhancements:\n1. Improved system stability and security.\n2. Added support for OpenVPN and kill switch.",
+    "last_checked": "2026-11-03T07:32:25.526156+00:00"
+  },
+  "deco-x60-v3.2": {
+    "model_id": "deco-x60-v3.2",
+    "model_name": "TP-Link Deco X60 (V3.2)",
+    "version": "1.6.12 Build 20260513",
+    "version_dir_url": "https://www.tp-link.com/vn/support/download/deco-x60/v3.20/",
+    "firmware_zip_url": null,
+    "firmware_zip_name": null,
+    "firmware_size": null,
+    "release_note_url": null,
+    "release_date": "2026-06-15",
+    "brand": "tplink",
+    "changelog": "New Features/Enhancements:\n1. Added the 5G bandwidth switch feature.\n2. Improved overall system stability and security.",
+    "last_checked": "2026-11-03T07:32:26.622251+00:00"
   }
 }
