@@ -1,7 +1,10 @@
 """Hikvision crawler and parser for firmware files using httpx."""
 
+import json
 import logging
 import re
+import shutil
+import subprocess
 from urllib.parse import urljoin, urlparse
 
 import httpx
@@ -39,6 +42,44 @@ class HikvisionClient(BaseCrawlerClient):
         if "EO_Bot_Ssid" not in js_html or "__tst_status" not in js_html:
             return None
 
+        script_match = re.search(
+            r"<script[^>]*>(.*?)</script>",
+            js_html,
+            re.DOTALL | re.IGNORECASE,
+        )
+        node_bin = shutil.which("node")
+        if script_match and node_bin:
+            runner = (
+                "const vm = require('vm');"
+                "const cookies = [];"
+                "const sandbox = {"
+                "  document: { set cookie(v) { cookies.push(String(v)); } },"
+                "  location: { href: '' },"
+                "  setTimeout: () => {}"
+                "};"
+                "vm.runInNewContext(process.argv[1], sandbox, { timeout: 1000 });"
+                "console.log(JSON.stringify(cookies));"
+            )
+            try:
+                proc = subprocess.run(  # noqa: S603
+                    [node_bin, "-e", runner, script_match.group(1)],
+                    capture_output=True,
+                    text=True,
+                    timeout=3.0,
+                    check=True,
+                )
+                raw_cookies: list[str] = json.loads(proc.stdout.strip())
+                parsed: dict[str, str] = {}
+                for item in raw_cookies:
+                    pair = item.split(";", 1)[0].strip()
+                    if "=" in pair:
+                        k, v = pair.split("=", 1)
+                        parsed[k.strip()] = v.strip()
+                if "__tst_status" in parsed and "EO_Bot_Ssid" in parsed:
+                    return parsed
+            except (subprocess.SubprocessError, json.JSONDecodeError, OSError) as e:
+                logger.debug("Node VM challenge evaluation failed, falling back to regex: %s", e)
+
         nums = [int(x) for x in re.findall(r"[A-Za-z_]\w*:(\d+)", js_html)]
         ssid_parts = re.findall(r"\(t,(\d+)\)", js_html)
         if not nums or not ssid_parts:
@@ -48,6 +89,7 @@ class HikvisionClient(BaseCrawlerClient):
             "__tst_status": f"{sum(nums)}#",
             "EO_Bot_Ssid": "".join(ssid_parts),
         }
+
     def fetch_catalog(self, catalog_url: str = DEFAULT_CATALOG_URL) -> str | None:
         """Fetch the full firmware catalog HTML (caches in-memory during session)."""
         if self._cached_catalog_html is not None:
