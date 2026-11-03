@@ -3,7 +3,7 @@
 import logging
 import re
 from typing import Any, Self
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import httpx
 from bs4 import BeautifulSoup
@@ -58,6 +58,22 @@ class HikvisionClient:
     def __exit__(self, *args: Any) -> None:
         self.close()
 
+    @staticmethod
+    def _solve_edgeone_challenge(js_html: str) -> dict[str, str] | None:
+        """Solve TencentEdgeOne JS bot challenge (__tst_status and EO_Bot_Ssid cookies)."""
+        if "EO_Bot_Ssid" not in js_html or "__tst_status" not in js_html:
+            return None
+
+        nums = [int(x) for x in re.findall(r"[A-Za-z_]\w*:(\d+)", js_html)]
+        ssid_parts = re.findall(r"\(t,(\d+)\)", js_html)
+        if not nums or not ssid_parts:
+            return None
+
+        return {
+            "__tst_status": f"{sum(nums)}#",
+            "EO_Bot_Ssid": "".join(ssid_parts),
+        }
+
     def fetch_catalog(self, catalog_url: str = DEFAULT_CATALOG_URL) -> str | None:
         """Fetch the full firmware catalog HTML (caches in-memory during session)."""
         if self._cached_catalog_html is not None:
@@ -66,6 +82,30 @@ class HikvisionClient:
         try:
             logger.info("Fetching Hikvision firmware catalog from %s...", catalog_url)
             resp = self.client.get(catalog_url)
+
+            for attempt in range(1, 3):
+                challenge_cookies = self._solve_edgeone_challenge(resp.text)
+                if not challenge_cookies:
+                    break
+                logger.info(
+                    "Detected TencentEdgeOne JS challenge (attempt %d), solving cookies...",
+                    attempt,
+                )
+                domain = urlparse(str(resp.url)).hostname or "www.hikvision.com"
+                self.client.cookies.clear()
+                for name, value in challenge_cookies.items():
+                    self.client.cookies.set(name, value, domain=domain, path="/")
+                resp = self.client.get(catalog_url)
+
+            logger.info(
+                "Hikvision catalog response: status=%d url=%s content_type=%r "
+                "content_length=%r server=%r",
+                resp.status_code,
+                resp.url,
+                resp.headers.get("content-type"),
+                resp.headers.get("content-length"),
+                resp.headers.get("server"),
+            )
             if resp.status_code == 200 and len(resp.text) > 1000:
                 self._cached_catalog_html = resp.text
                 logger.info(
@@ -73,7 +113,12 @@ class HikvisionClient:
                     len(resp.text) / (1024 * 1024),
                 )
                 return self._cached_catalog_html
-            logger.error("Failed to fetch catalog: HTTP %d (Length: %d)", resp.status_code, len(resp.text))
+            logger.error(
+                "Failed to fetch catalog: HTTP %d (Length: %d, body prefix: %r)",
+                resp.status_code,
+                len(resp.text),
+                resp.text[:300],
+            )
         except httpx.HTTPError as e:
             logger.error("HTTP error while fetching Hikvision catalog: %s", e)
         return None
