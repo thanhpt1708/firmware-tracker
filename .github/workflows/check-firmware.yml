@@ -15,13 +15,29 @@ on:
           - all
           - draytek
           - hikvision
+          - tplink
       model:
         description: 'Specific model ID to check (optional)'
         required: false
         type: string
         default: ''
+      dry_run:
+        description: 'Dry run: crawl without sending alerts or saving state'
+        required: false
+        type: boolean
+        default: false
       force_notify:
         description: 'Force send notification even if version is already recorded'
+        required: false
+        type: boolean
+        default: false
+      notify_on_init:
+        description: 'Send notification on first run for newly tracked models'
+        required: false
+        type: boolean
+        default: true
+      verbose:
+        description: 'Enable verbose debug logging'
         required: false
         type: boolean
         default: false
@@ -50,11 +66,18 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          NOTIFY_ON_INIT: "true"
         run: |
           EXTRA_ARGS=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            EXTRA_ARGS="$EXTRA_ARGS --dry-run"
+          fi
           if [ "${{ inputs.force_notify }}" = "true" ]; then
             EXTRA_ARGS="$EXTRA_ARGS --force-notify"
+          fi
+          if [ "${{ inputs.notify_on_init }}" = "false" ]; then
+            EXTRA_ARGS="$EXTRA_ARGS --no-notify-on-init"
+          elif [ "${{ inputs.notify_on_init }}" = "true" ]; then
+            EXTRA_ARGS="$EXTRA_ARGS --notify-on-init"
           fi
           if [ -n "${{ inputs.brand }}" ] && [ "${{ inputs.brand }}" != "all" ]; then
             EXTRA_ARGS="$EXTRA_ARGS --brand ${{ inputs.brand }}"
@@ -62,9 +85,13 @@ jobs:
           if [ -n "${{ inputs.model }}" ]; then
             EXTRA_ARGS="$EXTRA_ARGS --model ${{ inputs.model }}"
           fi
+          if [ "${{ inputs.verbose }}" = "true" ]; then
+            EXTRA_ARGS="$EXTRA_ARGS --verbose"
+          fi
           uv run python src/tracker.py check $EXTRA_ARGS
 
       - name: Commit and push state changes
+        if: ${{ inputs.dry_run != true }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
