@@ -9,7 +9,7 @@
     "firmware_size": "32M",
     "release_note_url": "https://fw.draytek.com.tw/Vigor2926/Firmware/v3.9.9.13/DrayTek_Vigor2926_V3.9.9.13_release-note.pdf",
     "release_date": "2026-09-30 09:41",
-    "last_checked": "2026-11-03T07:32:23.771409+00:00"
+    "last_checked": "2026-11-04T07:13:25.314810+00:00"
   },
   "deco-m4-v1": {
     "model_id": "deco-m4-v1",
@@ -23,7 +23,7 @@
     "release_date": "2025-12-12",
     "brand": "tplink",
     "changelog": "New Features/Enhancements:\n1. Improved system stability and security.\n2. Added support for OpenVPN and kill switch.",
-    "last_checked": "2026-11-03T07:32:25.526156+00:00"
+    "last_checked": "2026-11-04T07:13:29.292864+00:00"
   },
   "deco-x60-v3.2": {
     "model_id": "deco-x60-v3.2",
@@ -37,6 +37,34 @@
     "release_date": "2026-06-15",
     "brand": "tplink",
     "changelog": "New Features/Enhancements:\n1. Added the 5G bandwidth switch feature.\n2. Improved overall system stability and security.",
-    "last_checked": "2026-11-03T07:32:26.622251+00:00"
+    "last_checked": "2026-11-04T07:13:29.663967+00:00"
+  },
+  "7208hqhi-m1-e": {
+    "model_id": "7208hqhi-m1-e",
+    "model_name": "IDS-7208HQHI-M1/E",
+    "version": "4.84.011",
+    "version_dir_url": "https://www.hikvision.com/en/products/Turbo-HD-Products/DVR/Value-Series/ids-7208hqhi-m1-e/",
+    "firmware_zip_url": "https://assets.hikvision.com/prd/normal/all/files/202603/Firmware_Asia_V4.84.011_251217_S3000693361.zip",
+    "firmware_zip_name": "Firmware_Asia_V4.84.011_251217_S3000693361.zip",
+    "firmware_size": "31.8M",
+    "release_note_url": "https://assets.hikvision.com/prd/normal/all/files/202603/releasenote%5CTurbo_HD_DVR_V4.84.011build251217_Release_Notes.pdf",
+    "release_date": "2025-12-17",
+    "brand": "hikvision",
+    "changelog": null,
+    "last_checked": "2026-11-04T07:13:27.649063+00:00"
+  },
+  "ds-2cd1043g2-liuf": {
+    "model_id": "ds-2cd1043g2-liuf",
+    "model_name": "DS-2CD1043G2-LIU(F)",
+    "version": "5.8.42",
+    "version_dir_url": "https://www.hikvision.com/en/products/IP-Products/Network-Cameras/value-series/ds-2cd1043g2-liu-f-/",
+    "firmware_zip_url": "https://assets.hikvision.com/prd/normal/all/files/202609/Firmware__V5.8.42_260827_S3000751723.zip",
+    "firmware_zip_name": "Firmware__V5.8.42_260827_S3000751723.zip",
+    "firmware_size": "23.8M",
+    "release_note_url": null,
+    "release_date": "2026-08-27",
+    "brand": "hikvision",
+    "changelog": null,
+    "last_checked": "2026-11-04T07:13:28.730217+00:00"
   }
 }
