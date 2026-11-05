@@ -9,7 +9,7 @@
     "firmware_size": "32M",
     "release_note_url": "https://fw.draytek.com.tw/Vigor2926/Firmware/v3.9.9.13/DrayTek_Vigor2926_V3.9.9.13_release-note.pdf",
     "release_date": "2026-09-30 09:41",
-    "last_checked": "2026-11-04T07:13:25.314810+00:00"
+    "last_checked": "2026-11-05T07:40:22.851521+00:00"
   },
   "deco-m4-v1": {
     "model_id": "deco-m4-v1",
@@ -23,7 +23,7 @@
     "release_date": "2025-12-12",
     "brand": "tplink",
     "changelog": "New Features/Enhancements:\n1. Improved system stability and security.\n2. Added support for OpenVPN and kill switch.",
-    "last_checked": "2026-11-04T07:13:29.292864+00:00"
+    "last_checked": "2026-11-05T07:40:24.892112+00:00"
   },
   "deco-x60-v3.2": {
     "model_id": "deco-x60-v3.2",
@@ -37,7 +37,7 @@
     "release_date": "2026-06-15",
     "brand": "tplink",
     "changelog": "New Features/Enhancements:\n1. Added the 5G bandwidth switch feature.\n2. Improved overall system stability and security.",
-    "last_checked": "2026-11-04T07:13:29.663967+00:00"
+    "last_checked": "2026-11-05T07:40:25.233757+00:00"
   },
   "7208hqhi-m1-e": {
     "model_id": "7208hqhi-m1-e",
@@ -51,7 +51,7 @@
     "release_date": "2025-12-17",
     "brand": "hikvision",
     "changelog": null,
-    "last_checked": "2026-11-04T07:13:27.649063+00:00"
+    "last_checked": "2026-11-05T07:40:24.027611+00:00"
   },
   "ds-2cd1043g2-liuf": {
     "model_id": "ds-2cd1043g2-liuf",
@@ -65,6 +65,6 @@
     "release_date": "2026-08-27",
     "brand": "hikvision",
     "changelog": null,
-    "last_checked": "2026-11-04T07:13:28.730217+00:00"
+    "last_checked": "2026-11-05T07:40:24.364520+00:00"
   }
 }
