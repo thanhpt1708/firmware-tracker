@@ -45,3 +45,13 @@ tplink:
     name: "TP-Link Deco X60 (V3.2)"
     url: "https://www.tp-link.com/vn/support/download/deco-x60/v3.20/"
     enabled: true
+
+  - id: "archer-c50-v3"
+    name: "TP-Link Archer C50 (V3)"
+    url: "https://www.tp-link.com/vn/support/download/archer-c50/v3/"
+    enabled: true
+
+  - id: "archer-c20-v4"
+    name: "TP-Link Archer C20 (V4)"
+    url: "https://www.tp-link.com/vn/support/download/archer-c20/v4/"
+    enabled: true
