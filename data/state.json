@@ -9,7 +9,7 @@
     "firmware_size": "32M",
     "release_note_url": "https://fw.draytek.com.tw/Vigor2926/Firmware/v3.9.9.13/DrayTek_Vigor2926_V3.9.9.13_release-note.pdf",
     "release_date": "2026-09-30 09:41",
-    "last_checked": "2026-11-11T07:28:37.117689+00:00"
+    "last_checked": "2026-11-12T07:56:22.570589+00:00"
   },
   "deco-m4-v1": {
     "model_id": "deco-m4-v1",
@@ -23,7 +23,7 @@
     "release_date": "2025-12-12",
     "brand": "tplink",
     "changelog": "New Features/Enhancements:\n1. Improved system stability and security.\n2. Added support for OpenVPN and kill switch.",
-    "last_checked": "2026-11-11T07:28:40.983291+00:00"
+    "last_checked": "2026-11-12T07:56:26.317185+00:00"
   },
   "deco-x60-v3.2": {
     "model_id": "deco-x60-v3.2",
@@ -37,7 +37,7 @@
     "release_date": "2026-06-15",
     "brand": "tplink",
     "changelog": "New Features/Enhancements:\n1. Added the 5G bandwidth switch feature.\n2. Improved overall system stability and security.",
-    "last_checked": "2026-11-11T07:28:41.486950+00:00"
+    "last_checked": "2026-11-12T07:56:26.771821+00:00"
   },
   "7208hqhi-m1-e": {
     "model_id": "7208hqhi-m1-e",
@@ -51,7 +51,7 @@
     "release_date": "2025-12-17",
     "brand": "hikvision",
     "changelog": null,
-    "last_checked": "2026-11-11T07:28:40.099204+00:00"
+    "last_checked": "2026-11-12T07:56:24.676666+00:00"
   },
   "ds-2cd1043g2-liuf": {
     "model_id": "ds-2cd1043g2-liuf",
@@ -65,7 +65,7 @@
     "release_date": "2026-08-27",
     "brand": "hikvision",
     "changelog": null,
-    "last_checked": "2026-11-11T07:28:40.348625+00:00"
+    "last_checked": "2026-11-12T07:56:24.882241+00:00"
   },
   "archer-c50-v3": {
     "model_id": "archer-c50-v3",
@@ -79,7 +79,7 @@
     "release_date": "2018-04-20",
     "brand": "tplink",
     "changelog": "For Archer C50(EU)3.0\nFixed WPA2 (KRACKs) vulnerability.",
-    "last_checked": "2026-11-11T07:28:41.880019+00:00"
+    "last_checked": "2026-11-12T07:56:27.189673+00:00"
   },
   "archer-c20-v4": {
     "model_id": "archer-c20-v4",
@@ -93,6 +93,6 @@
     "release_date": "2025-01-21",
     "brand": "tplink",
     "changelog": "Enhance device security.",
-    "last_checked": "2026-11-11T07:28:42.304391+00:00"
+    "last_checked": "2026-11-12T07:56:27.858351+00:00"
   }
 }
