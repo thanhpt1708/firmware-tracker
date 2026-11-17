@@ -86,6 +86,11 @@ def test_find_model_block():
     assert block3 is not None
     assert "DS-2CD2043G2-I" in block3
 
+    # Test match variants for Smart Hybrid Light (-LIU / -LIUF)
+    html_with_liu = '<div class="nav-item"><a class="link" href="/value-series/ds-2cd1143g2-liu-f-/">DS-2CD1143G2-LIU(F)</a></div>'
+    assert client.find_model_block(html_with_liu, "ds-2cd1143g2-liuf") is not None
+    assert client.find_model_block(html_with_liu, "ds-2cd1143g2-liu") is not None
+
     # Test not found
     block4 = client.find_model_block(SAMPLE_HIKVISION_CATALOG_HTML, "non-existent-model")
     assert block4 is None

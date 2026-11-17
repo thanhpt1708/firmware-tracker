@@ -153,6 +153,13 @@ class HikvisionClient(BaseCrawlerClient):
                 f"ds-{clean_target.replace('/', '-')}",
             ])
 
+        # Support common Hikvision Smart Hybrid Light suffixes (-LIU, -LIUF, -LIU-F, -LIU(F))
+        if clean_target.endswith("liuf"):
+            base = clean_target[:-1]
+            variants.extend([base, f"{base}-f", f"{base}(f)"])
+        elif clean_target.endswith("liu"):
+            variants.extend([f"{clean_target}f", f"{clean_target}-f", f"{clean_target}(f)"])
+
         idx = -1
         html_lower = html.lower()
         for variant in variants:
