@@ -9,7 +9,7 @@
     "firmware_size": "32M",
     "release_note_url": "https://fw.draytek.com.tw/Vigor2926/Firmware/v3.9.9.13/DrayTek_Vigor2926_V3.9.9.13_release-note.pdf",
     "release_date": "2026-09-30 09:41",
-    "last_checked": "2026-11-17T08:46:29.930200+00:00"
+    "last_checked": "2026-11-18T08:10:59.720317+00:00"
   },
   "deco-m4-v1": {
     "model_id": "deco-m4-v1",
@@ -23,7 +23,7 @@
     "release_date": "2025-12-12",
     "brand": "tplink",
     "changelog": "New Features/Enhancements:\n1. Improved system stability and security.\n2. Added support for OpenVPN and kill switch.",
-    "last_checked": "2026-11-17T08:46:35.016806+00:00"
+    "last_checked": "2026-11-18T08:11:05.514304+00:00"
   },
   "deco-x60-v3.2": {
     "model_id": "deco-x60-v3.2",
@@ -37,7 +37,7 @@
     "release_date": "2026-06-15",
     "brand": "tplink",
     "changelog": "New Features/Enhancements:\n1. Added the 5G bandwidth switch feature.\n2. Improved overall system stability and security.",
-    "last_checked": "2026-11-17T08:46:35.342580+00:00"
+    "last_checked": "2026-11-18T08:11:05.902396+00:00"
   },
   "7208hqhi-m1-e": {
     "model_id": "7208hqhi-m1-e",
@@ -51,7 +51,7 @@
     "release_date": "2025-12-17",
     "brand": "hikvision",
     "changelog": null,
-    "last_checked": "2026-11-17T08:46:34.191242+00:00"
+    "last_checked": "2026-11-18T08:11:03.609195+00:00"
   },
   "ds-2cd1043g2-liuf": {
     "model_id": "ds-2cd1043g2-liuf",
@@ -65,7 +65,7 @@
     "release_date": "2026-08-27",
     "brand": "hikvision",
     "changelog": null,
-    "last_checked": "2026-11-17T08:46:34.445943+00:00"
+    "last_checked": "2026-11-18T08:11:03.757098+00:00"
   },
   "archer-c50-v3": {
     "model_id": "archer-c50-v3",
@@ -79,7 +79,7 @@
     "release_date": "2018-04-20",
     "brand": "tplink",
     "changelog": "For Archer C50(EU)3.0\nFixed WPA2 (KRACKs) vulnerability.",
-    "last_checked": "2026-11-17T08:46:35.720044+00:00"
+    "last_checked": "2026-11-18T08:11:06.271543+00:00"
   },
   "archer-c20-v4": {
     "model_id": "archer-c20-v4",
@@ -93,6 +93,20 @@
     "release_date": "2025-01-21",
     "brand": "tplink",
     "changelog": "Enhance device security.",
-    "last_checked": "2026-11-17T08:46:36.039857+00:00"
+    "last_checked": "2026-11-18T08:11:06.583827+00:00"
+  },
+  "ds-2cd1143g2-liuf": {
+    "model_id": "ds-2cd1143g2-liuf",
+    "model_name": "DS-2CD1143G2-LIU(F)(/AB)",
+    "version": "5.8.42",
+    "version_dir_url": "https://www.hikvision.com/en/products/IP-Products/Network-Cameras/value-series/ds-2cd1143g2-liu-f---ab-/",
+    "firmware_zip_url": "https://assets.hikvision.com/prd/normal/all/files/202609/Firmware__V5.8.42_260827_S3000751723.zip",
+    "firmware_zip_name": "Firmware__V5.8.42_260827_S3000751723.zip",
+    "firmware_size": "23.8M",
+    "release_note_url": null,
+    "release_date": "2026-08-27",
+    "brand": "hikvision",
+    "changelog": null,
+    "last_checked": "2026-11-18T08:11:05.089662+00:00"
   }
 }
