@@ -30,8 +30,8 @@ hikvision:
     region: "Asia"
     enabled: true
 
-  - id: "ds-2cd1143g2-liuf"
-    name: "Hikvision DS-2CD1143G2-LIUF"
+  - id: "ds-2cd1343g2-liuf"
+    name: "Hikvision DS-2CD1343G2-LIUF"
     region: "Asia"
     enabled: true
 
