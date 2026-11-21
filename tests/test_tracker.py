@@ -140,6 +140,67 @@ def test_run_tracker_hikvision_model(mock_hik_client_cls, mock_notifier_cls):
         mock_notifier.send_firmware_alert.assert_called_once()
 
 
+@patch("src.tracker.TelegramNotifier")
+@patch("src.tracker.HikvisionClient")
+def test_run_tracker_groups_shared_hikvision_firmware(mock_hik_client_cls, mock_notifier_cls):
+    mock_hik_client = MagicMock()
+    mock_notifier = MagicMock()
+    mock_hik_client_cls.return_value = mock_hik_client
+    mock_notifier_cls.return_value = mock_notifier
+
+    shared_zip = "https://assets.hikvision.com/prd/normal/all/files/202609/Firmware__V5.8.42_260827_S3000751723.zip"
+    mock_hik_client.get_latest_firmware.side_effect = [
+        FirmwareInfo(
+            model_id="ds-2cd1043g2-liuf",
+            model_name="DS-2CD1043G2-LIU(F)",
+            version="5.8.42",
+            version_dir_url="https://www.hikvision.com/en/products/.../ds-2cd1043g2-liu-f-/",
+            firmware_zip_name="Firmware__V5.8.42_260827_S3000751723.zip",
+            firmware_zip_url=shared_zip,
+            firmware_size="23.8M",
+            brand="hikvision",
+        ),
+        FirmwareInfo(
+            model_id="ds-2cd1343g2-liuf",
+            model_name="DS-2CD1343G2-LIU(F)(/AB)",
+            version="5.8.42",
+            version_dir_url="https://www.hikvision.com/en/products/.../ds-2cd1343g2-liu-f---ab-/",
+            firmware_zip_name="Firmware__V5.8.42_260827_S3000751723.zip",
+            firmware_zip_url=shared_zip,
+            firmware_size="23.8M",
+            brand="hikvision",
+        ),
+    ]
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        config_file = os.path.join(tmpdir, "models.yaml")
+        state_file = os.path.join(tmpdir, "state.json")
+
+        with open(config_file, "w") as f:
+            yaml.dump(
+                {
+                    "hikvision": [
+                        {"id": "ds-2cd1043g2-liuf", "name": "Hikvision DS-2CD1043G2-LIUF", "enabled": True},
+                        {"id": "ds-2cd1343g2-liuf", "name": "Hikvision DS-2CD1343G2-LIUF", "enabled": True},
+                    ]
+                },
+                f,
+            )
+
+        exit_code = run_tracker(
+            config_path=config_file,
+            state_path=state_file,
+            dry_run=False,
+            notify_on_init=True,
+        )
+        assert exit_code == 0
+        assert mock_hik_client.get_latest_firmware.call_count == 2
+        mock_notifier.send_firmware_alert.assert_not_called()
+        mock_notifier.send_firmware_alerts.assert_called_once()
+        grouped_arg = mock_notifier.send_firmware_alerts.call_args[0][0]
+        assert [item.model_id for item in grouped_arg] == ["ds-2cd1043g2-liuf", "ds-2cd1343g2-liuf"]
+
+
 @patch("src.tracker.run_tracker")
 def test_cli_check_command(mock_run_tracker):
     mock_run_tracker.return_value = 0

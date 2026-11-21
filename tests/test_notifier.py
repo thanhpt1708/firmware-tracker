@@ -113,6 +113,56 @@ def test_send_firmware_alert_hikvision(httpx_mock: HTTPXMock):
     assert "Xem Trang Sản Phẩm Hikvision" in text
 
 
+def test_send_firmware_alerts_grouped_hikvision(httpx_mock: HTTPXMock):
+    bot_token = "123456:ABC"
+    chat_id = "987654"
+
+    httpx_mock.add_response(
+        url=f"https://api.telegram.org/bot{bot_token}/sendMessage",
+        method="POST",
+        json={"ok": True},
+        status_code=200,
+    )
+
+    notifier = TelegramNotifier(bot_token, chat_id)
+    shared_zip = "https://assets.hikvision.com/prd/normal/all/files/202609/Firmware__V5.8.42_260827_S3000751723.zip"
+    infos = [
+        FirmwareInfo(
+            model_id="ds-2cd1043g2-liuf",
+            model_name="DS-2CD1043G2-LIU(F)",
+            version="5.8.42",
+            version_dir_url="https://www.hikvision.com/en/products/.../ds-2cd1043g2-liu-f-/",
+            firmware_zip_name="Firmware__V5.8.42_260827_S3000751723.zip",
+            firmware_zip_url=shared_zip,
+            firmware_size="23.8M",
+            release_date="2026-08-27",
+            brand="hikvision",
+        ),
+        FirmwareInfo(
+            model_id="ds-2cd1343g2-liuf",
+            model_name="DS-2CD1343G2-LIU(F)(/AB)",
+            version="5.8.42",
+            version_dir_url="https://www.hikvision.com/en/products/.../ds-2cd1343g2-liu-f---ab-/",
+            firmware_zip_name="Firmware__V5.8.42_260827_S3000751723.zip",
+            firmware_zip_url=shared_zip,
+            firmware_size="23.8M",
+            release_date="2026-08-27",
+            brand="hikvision",
+        ),
+    ]
+
+    success = notifier.send_firmware_alerts(infos)
+    assert success is True
+
+    requests = httpx_mock.get_requests()
+    assert len(requests) == 1
+    req_body = json.loads(requests[0].content)
+    text = req_body["text"]
+    assert "Thiết bị (2):" in text
+    assert "DS-2CD1043G2-LIU(F), DS-2CD1343G2-LIU(F)(/AB)" in text
+    assert "<code>v5.8.42</code>" in text
+
+
 def test_send_test_message(httpx_mock: HTTPXMock):
     bot_token = "123456:ABC"
     chat_id = "987654"

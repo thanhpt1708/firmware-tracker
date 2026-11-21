@@ -8,7 +8,7 @@ import typer
 from dotenv import load_dotenv
 
 from src.config import ModelConfig, TrackerConfig
-from src.draytek_client import DrayTekClient
+from src.draytek_client import DrayTekClient, FirmwareInfo
 from src.hikvision_client import HikvisionClient
 from src.notifier import TelegramNotifier
 from src.state_manager import StateManager, is_new_or_different
@@ -48,6 +48,13 @@ def load_config(config_path: str = "config/models.yaml") -> list[ModelConfig]:
         raise typer.Exit(code=1)
 
 
+def _alert_group_key(info: FirmwareInfo) -> tuple[str, str, str]:
+    """Group alerts that point to the exact same firmware package."""
+    if info.firmware_zip_url:
+        return (info.brand.lower(), info.version, info.firmware_zip_url)
+    return (info.brand.lower(), info.version, info.version_dir_url or info.model_id)
+
+
 def run_tracker(
     config_path: str = "config/models.yaml",
     state_path: str = "data/state.json",
@@ -83,6 +90,7 @@ def run_tracker(
 
     logger.info("Starting check for %d model(s)...", len(models))
     state_changed = False
+    pending_alerts: list[FirmwareInfo] = []
 
     try:
         for model in models:
@@ -133,13 +141,7 @@ def run_tracker(
             should_notify = force_notify or (is_new_model and notify_on_init) or (not is_new_model and is_newer)
 
             if should_notify:
-                logger.info("Sending alert for %s (v%s)...", model_name, info.version)
-                if dry_run:
-                    logger.info("[DRY RUN] Notification skipped.")
-                else:
-                    sent = notifier.send_firmware_alert(info)
-                    if not sent and notifier.is_configured():
-                        logger.warning("Failed to send notification via Telegram.")
+                pending_alerts.append(info)
 
             if is_new_model or is_newer or force_notify:
                 state_record = info.to_dict()
@@ -151,6 +153,24 @@ def run_tracker(
                 if current_record:
                     current_record["last_checked"] = datetime.now(UTC).isoformat()
                     state_changed = True
+
+        if pending_alerts:
+            grouped_alerts: dict[tuple[str, str, str], list[FirmwareInfo]] = {}
+            for alert_info in pending_alerts:
+                grouped_alerts.setdefault(_alert_group_key(alert_info), []).append(alert_info)
+
+            for group in grouped_alerts.values():
+                names_summary = ", ".join(dict.fromkeys(item.model_name for item in group))
+                logger.info("Sending alert for %s (v%s)...", names_summary, group[0].version)
+                if dry_run:
+                    logger.info("[DRY RUN] Notification skipped.")
+                else:
+                    if len(group) == 1:
+                        sent = notifier.send_firmware_alert(group[0])
+                    else:
+                        sent = notifier.send_firmware_alerts(group)
+                    if not sent and notifier.is_configured():
+                        logger.warning("Failed to send notification via Telegram.")
 
         if state_changed:
             if dry_run:

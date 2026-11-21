@@ -50,32 +50,43 @@ class TelegramNotifier:
             return False
 
     def send_firmware_alert(self, info: FirmwareInfo) -> bool:
-        """Format and send firmware alert message."""
-        brand_name = info.brand.upper()
-        model_name = html.escape(info.model_name)
-        ver_str = info.version if info.version.lower().startswith("v") else f"v{info.version}"
+        """Format and send firmware alert message for a single model."""
+        return self.send_firmware_alerts([info])
+
+    def send_firmware_alerts(self, infos: list[FirmwareInfo]) -> bool:
+        """Format and send a firmware alert message for one or more models sharing a release."""
+        if not infos:
+            return False
+
+        primary = infos[0]
+        brand_name = primary.brand.upper()
+        unique_names = list(dict.fromkeys(item.model_name for item in infos))
+        escaped_names = ", ".join(html.escape(name) for name in unique_names)
+        device_label = "Thiết bị" if len(unique_names) == 1 else f"Thiết bị ({len(unique_names)})"
+
+        ver_str = primary.version if primary.version.lower().startswith("v") else f"v{primary.version}"
         version = html.escape(ver_str)
-        release_date = html.escape(info.release_date or "Chưa rõ")
+        release_date = html.escape(primary.release_date or "Chưa rõ")
 
         lines = [
             f"🚀 <b>CẬP NHẬT FIRMWARE {brand_name} MỚI</b>",
             "",
-            f"📌 <b>Thiết bị:</b> {model_name}",
+            f"📌 <b>{device_label}:</b> {escaped_names}",
             f"🏷 <b>Phiên bản:</b> <code>{version}</code>",
             f"🗓 <b>Ngày phát hành:</b> {release_date}",
             "",
             "🔗 <b>Tài liệu & Tải về:</b>",
         ]
 
-        if info.release_note_url:
-            lines.append(f'• 📄 <a href="{info.release_note_url}">Xem Release Notes (PDF)</a>')
+        if primary.release_note_url:
+            lines.append(f'• 📄 <a href="{primary.release_note_url}">Xem Release Notes (PDF)</a>')
 
-        if info.firmware_zip_url:
-            size_txt = f" ({info.firmware_size})" if info.firmware_size else ""
-            zip_label = html.escape(info.firmware_zip_name or "Firmware ZIP")
-            lines.append(f'• 💾 <a href="{info.firmware_zip_url}">Tải {zip_label}{size_txt}</a>')
+        if primary.firmware_zip_url:
+            size_txt = f" ({primary.firmware_size})" if primary.firmware_size else ""
+            zip_label = html.escape(primary.firmware_zip_name or "Firmware ZIP")
+            lines.append(f'• 💾 <a href="{primary.firmware_zip_url}">Tải {zip_label}{size_txt}</a>')
 
-        match info.brand.lower():
+        match primary.brand.lower():
             case "hikvision":
                 folder_label = "Xem Trang Sản Phẩm Hikvision"
             case "draytek":
@@ -85,10 +96,10 @@ class TelegramNotifier:
             case _:
                 folder_label = "Mở Thư mục Firmware"
 
-        lines.append(f'• 📂 <a href="{info.version_dir_url}">{folder_label}</a>')
+        lines.append(f'• 📂 <a href="{primary.version_dir_url}">{folder_label}</a>')
 
-        if info.changelog:
-            clean_log = info.changelog.strip()
+        if primary.changelog:
+            clean_log = primary.changelog.strip()
             lines_log = [line.strip() for line in clean_log.splitlines() if line.strip()]
             if lines_log:
                 preview_lines = lines_log[:6]
