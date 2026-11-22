@@ -35,6 +35,11 @@ hikvision:
     region: "Asia"
     enabled: true
 
+  - id: "ds-3e1505p-ei-m"
+    name: "Hikvision DS-3E1505P-EI/M"
+    region: "Asia"
+    enabled: true
+
 # ------------------------------------------------------------------------------
 # 3. TP-LINK ROUTER & DECO MESH
 # ------------------------------------------------------------------------------
